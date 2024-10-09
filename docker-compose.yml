@@ -1,20 +1,26 @@
-version: '3.6'
 services:
   gitlab:
     image: gitlab/gitlab-ce:latest
     container_name: gitlab
     restart: always
-    hostname: 'gitlab.example.com'
+    hostname: 'gitlab.devops.dz'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         # Add any other gitlab.rb configuration here, each on its own line
-        external_url 'https://gitlab.example.com'
+        external_url 'https://gitlab.devops.dz'
+        nginx['ssl_certificate'] = "/etc/gitlab/ssl/cert.crt"
+        nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/key.key"
     ports:
-      - '80:80'
-      - '443:443'
+      - '8080:80'
+      - '8443:443'
       - '2424:22'
     volumes:
       - '$GITLAB_HOME/config:/etc/gitlab'
       - '$GITLAB_HOME/logs:/var/log/gitlab'
       - '$GITLAB_HOME/data:/var/opt/gitlab'
+      - '/home/ubuntu/services/certs:/etc/gitlab/ssl'
     shm_size: '256m'
+
+networks:
+  gitlab-network:  # Define the custom network
+    external: true  # Indicate that the network is external
